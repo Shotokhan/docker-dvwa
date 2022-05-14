@@ -5,11 +5,15 @@ services:
 
   dvwa_web:
     image: cytopia/dvwa:php-${PHP_VERSION:-7.2}
-    restart: unless-stopped
+    container_name: dvwa_web
     ports:
       - "${LISTEN_PORT:-8000}:80"
     networks:
       - dvwa-net
+    cpus: "0.1"
+    mem_limit: 128m
+    memswap_limit: 256m
+    oom_kill_disable: true
     environment:
       - RECAPTCHA_PRIV_KEY=${RECAPTCHA_PRIV_KEY:-}
       - RECAPTCHA_PUB_KEY=${RECAPTCHA_PUB_KEY:-}
@@ -25,6 +29,11 @@ services:
   dvwa_db:
     image: mysql:5.6
     hostname: dvwa_db
+    container_name: dvwa_db
+    cpus: "0.1"
+    mem_limit: 128m
+    memswap_limit: 256m
+    oom_kill_disable: true
     volumes:
       - dvwa_db_data:/var/lib/mysql
     environment:
@@ -32,7 +41,6 @@ services:
       MYSQL_DATABASE: dvwa
       MYSQL_USER: dvwa
       MYSQL_PASSWORD: p@ssw0rd
-    restart: unless-stopped
     networks:
       - dvwa-net
 
@@ -42,3 +50,5 @@ networks:
 
 volumes:
   dvwa_db_data:
+    driver: local
+
